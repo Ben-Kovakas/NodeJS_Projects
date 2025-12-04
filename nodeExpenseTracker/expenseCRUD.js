@@ -77,16 +77,7 @@ function updateExpense(id, description, amount){
 
 function listExpenses() {
     const expenseList = loadExpenses();
-    if (expenseList.length === 0) {
-        console.log('No expenses found.');
-        return;
-    }
-    console.table(expenseList);
-
-    const total = expenseList.reduce((sum, expense) => sum + expense.amount, 0);
-    expenseList.push({ id: 'TOTAL', description: '', amount: total, date: '' });
-
-    console.table(expenseList);
+    return expenseList;
 }
 
 function monthExpenses(month) {
