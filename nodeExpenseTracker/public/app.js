@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const expenseList = document.getElementById('expense-list');
     const addExpenseForm = document.getElementById('add-expense-form');
+    const currentTimeEl = document.getElementById('current-time');
+
+    // Display and update the current time every second
+    setInterval(() => {
+        currentTimeEl.textContent = dayjs().format('HH:mm:ss');
+    }, 1000);
 
     async function fetchExpenses() {
         const response = await fetch('/api/expenses');
@@ -19,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${expense.amount}</td>
                 <td>${expense.date}</td>
                 <td>
+                    <button onclick="editExpense(this, ${expense.id})">Edit</button>
                     <button onclick="deleteExpense(${expense.id})">Delete</button>
                 </td>
             `;
@@ -59,6 +66,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         fetchExpenses();
     };
+
+    window.editExpense = (button, id) => {
+        const row = button.parentNode.parentNode;
+        const descriptionCell = row.cells[1];
+        const amountCell = row.cells[2];
+    
+        const description = descriptionCell.textContent;
+        const amount = amountCell.textContent;
+    
+        descriptionCell.innerHTML = `<input type="text" value="${description}" />`;
+        amountCell.innerHTML = `<input type="number" value="${amount}" />`;
+    
+        button.textContent = 'Save';
+        button.onclick = () => saveExpense(id, row);
+    };
+    
+    async function saveExpense(id, row) {
+        const descriptionInput = row.cells[1].querySelector('input');
+        const amountInput = row.cells[2].querySelector('input');
+    
+        const description = descriptionInput.value;
+        const amount = parseFloat(amountInput.value);
+    
+        await fetch(`/api/expenses/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ description, amount }),
+        });
+    
+        fetchExpenses();
+    }
 
     fetchExpenses();
 });

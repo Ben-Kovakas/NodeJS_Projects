@@ -23,6 +23,13 @@ app.delete('/api/expenses/:id', (req, res) => {
     res.status(204).send();
 });
 
+app.put('/api/expenses/:id', (req, res) => {
+    const { description, amount } = req.body;
+    expenseCRUD.updateExpense(parseInt(req.params.id), description, amount);
+    res.status(200).send();
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
+

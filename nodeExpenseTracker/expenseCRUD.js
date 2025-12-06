@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const dayjs = require('dayjs');
 
 const FILE_PATH = path.join(__dirname, 'expenses.json');
 
@@ -18,7 +19,6 @@ function loadExpenses() {
   function createExpense(description, amount) {
     const expenseList = loadExpenses();
     const newId = expenseList.length === 0 ? 1 : expenseList[expenseList.length - 1].id + 1;
-    const date = new Date().toISOString().split('T')[0];
     expenseList.push({ id: newId, description, amount, date });
     saveExpenses(expenseList);
     console.log(`Expense created successfully (ID: ${newId})`);
