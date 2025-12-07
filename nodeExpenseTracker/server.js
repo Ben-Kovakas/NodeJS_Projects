@@ -12,6 +12,10 @@ app.get('/api/expenses', (req, res) => {
     res.json(expenseCRUD.listExpenses());
 });
 
+app.get('/api/expenses/monthly', (req, res) => {
+    res.json(expenseCRUD.monthExpenses(11));
+});
+
 app.post('/api/expenses', (req, res) => {
     const { description, amount } = req.body;
     expenseCRUD.createExpense(description, amount);
@@ -32,4 +36,3 @@ app.put('/api/expenses/:id', (req, res) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
-

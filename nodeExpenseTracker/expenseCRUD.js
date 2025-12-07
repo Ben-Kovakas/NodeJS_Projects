@@ -90,14 +90,13 @@ function monthExpenses(month) {
 
     if (filteredList.length === 0) {
         console.log(`No expenses found for month ${month}.`);
-        
-        return;
+        return []; // Return an empty array instead of undefined
     }
 
     const total = filteredList.reduce((sum, expense) => sum + expense.amount, 0);
     filteredList.push({ id: 'TOTAL', description: '', amount: total, date: '' });
 
-    console.table(filteredList);
+    return filteredList;
 }
 module.exports = {
   createExpense,
