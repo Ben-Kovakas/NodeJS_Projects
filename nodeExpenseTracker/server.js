@@ -12,8 +12,8 @@ app.get('/api/expenses', (req, res) => {
     res.json(expenseCRUD.listExpenses());
 });
 
-app.get('/api/expenses/monthly', (req, res) => {
-    res.json(expenseCRUD.monthExpenses(11));
+app.get('/api/expenses/monthly/:month', (req, res) => {
+    res.json(expenseCRUD.monthExpenses(req.params.month));
 });
 
 app.post('/api/expenses', (req, res) => {

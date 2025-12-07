@@ -93,9 +93,6 @@ function monthExpenses(month) {
         return []; // Return an empty array instead of undefined
     }
 
-    const total = filteredList.reduce((sum, expense) => sum + expense.amount, 0);
-    filteredList.push({ id: 'TOTAL', description: '', amount: total, date: '' });
-
     return filteredList;
 }
 module.exports = {

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const expenseList = document.getElementById('expense-list');
     const monthlyList = document.getElementById('monthly-list');
     const addExpenseForm = document.getElementById('add-expense-form');
+    const monthlySearchForm = document.getElementById('monthly-search-form');
     const currentTimeEl = document.getElementById('current-time');
 
     // Display and update the current time every second
@@ -12,72 +13,61 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchExpenses() {
         const response = await fetch('/api/expenses');
         const expenses = await response.json();
-
-        //spot to statically render a set of monthly expenses
-        const monthlyResponse = await fetch('/api/expenses/monthly');
-        const monthlyExpenses = await monthlyResponse.json();
-
         renderExpenses(expenses);
-        renderMonthlyExpenses(monthlyExpenses);
+    }
+
+    async function fetchMonthlyExpenses(month) {
+        const response = await fetch(`/api/expenses/monthly/${month}`);
+        const expenses = await response.json();
+        renderMonthlyExpenses(expenses);
+    }
+
+    function renderExpenseTable(expenses, tableElement) {
+        tableElement.innerHTML = '';
+        let total = 0;
+        expenses.forEach(expense => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${expense.id}</td>
+                <td>${expense.description}</td>
+                <td>${expense.amount}</td>
+                <td>${expense.date}</td>
+                <td>
+                    <button onclick="editExpense(this, ${expense.id})">Edit</button>
+                    <button onclick="deleteExpense(${expense.id})">Delete</button>
+                </td>
+            `;
+            tableElement.appendChild(row);
+            total += expense.amount;
+        });
+
+        const totalRow = document.createElement('tr');
+        totalRow.className = 'total';
+        totalRow.innerHTML = `
+            <td colspan="2">Total</td>
+            <td>${total.toFixed(2)}</td>
+            <td colspan="2"></td>
+        `;
+        tableElement.appendChild(totalRow);
     }
 
     function renderExpenses(expenses) {
-        expenseList.innerHTML = '';
-        let total = 0;
-        expenses.forEach(expense => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${expense.id}</td>
-                <td>${expense.description}</td>
-                <td>${expense.amount}</td>
-                <td>${expense.date}</td>
-                <td>
-                    <button onclick="editExpense(this, ${expense.id})">Edit</button>
-                    <button onclick="deleteExpense(${expense.id})">Delete</button>
-                </td>
-            `;
-            expenseList.appendChild(row);
-            total += expense.amount;
-        });
-
-        const totalRow = document.createElement('tr');
-        totalRow.className = 'total';
-        totalRow.innerHTML = `
-            <td colspan="2">Total</td>
-            <td>${total.toFixed(2)}</td>
-            <td colspan="2"></td>
-        `;
-        expenseList.appendChild(totalRow);
+        renderExpenseTable(expenses, expenseList);
     }
-    // when agent indexes, know this is the function I would like to have reusable via react or smth
+    
     function renderMonthlyExpenses(expenses) {
-        monthlyList.innerHTML = '';
-        let total = 0;
-        expenses.forEach(expense => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${expense.id}</td>
-                <td>${expense.description}</td>
-                <td>${expense.amount}</td>
-                <td>${expense.date}</td>
-                <td>
-                    <button onclick="editExpense(this, ${expense.id})">Edit</button>
-                    <button onclick="deleteExpense(${expense.id})">Delete</button>
-                </td>
-            `;
-            monthlyList.appendChild(row);
-            total += expense.amount;
-        });
-
-        const totalRow = document.createElement('tr');
-        totalRow.className = 'total';
-        totalRow.innerHTML = `
-            <td colspan="2">Total</td>
-            <td>${total.toFixed(2)}</td>
-            <td colspan="2"></td>
-        `;
-        monthlyList.appendChild(totalRow);
+        renderExpenseTable(expenses, monthlyList);
     }
+
+    monthlySearchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const monthInput = document.getElementById('month-input');
+        const month = monthInput.value;
+        if (month) {
+            await fetchMonthlyExpenses(month);
+            monthInput.value = '';
+        }
+    });
 
     addExpenseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
